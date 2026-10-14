@@ -28,7 +28,7 @@ class ZenithApplication : Application() {
         lateinit var instance: ZenithApplication
             private set
 
-        const val DEFAULT_BASE_URL = "https://zenith26-fest.vercel.app/"
+        const val DEFAULT_BASE_URL = "https://hsb-fest-mobile.vercel.app/"
         private const val KEY_BASE_URL = "key_base_url"
     }
 }

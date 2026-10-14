@@ -83,14 +83,14 @@ fun ServerConfigDialog(
                 )
 
                 Button(
-                    onClick = { urlText = "https://zenith26-fest.vercel.app/" },
+                    onClick = { urlText = "https://hsb-fest-mobile.vercel.app/" },
                     modifier = Modifier.fillMaxWidth().height(38.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Slate800),
                     shape = RoundedCornerShape(10.dp),
                     border = androidx.compose.foundation.BorderStroke(1.dp, Purple500),
                     contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)
                 ) {
-                    Text(text = "▲ Vercel Cloud (Appetize / BrowserStack)", color = Purple300, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                    Text(text = "▲ Vercel Cloud (hsb-fest-mobile)", color = Purple300, fontSize = 11.sp, fontWeight = FontWeight.Bold)
                 }
 
                 Row(

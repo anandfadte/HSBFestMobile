@@ -20,7 +20,7 @@ from backend.models import (
 from backend.seed_data import seed_events
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-FRONTEND_DIR = BASE_DIR / "frontend"
+FRONTEND_DIR = BASE_DIR / "frontend" if (BASE_DIR / "frontend").exists() else (BASE_DIR / "public")
 
 app = FastAPI(
     title="Zenith '26 Fest Management System API",
