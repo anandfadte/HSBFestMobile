@@ -1,0 +1,7 @@
+<resources>
+    <style name="Theme.Zenith26FestApp" parent="android:Theme.Material.NoActionBar">
+        <item name="android:statusBarColor">@color/slate_900</item>
+        <item name="android:navigationBarColor">@color/slate_950</item>
+        <item name="android:windowBackground">@color/slate_900</item>
+    </style>
+</resources>

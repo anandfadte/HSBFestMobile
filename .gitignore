@@ -1,0 +1,30 @@
+# Python
+.venv/
+venv/
+env/
+ENV/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+
+# Android / Gradle
+.gradle/
+**/build/
+android/.gradle/
+android/build/
+android/app/build/
+local.properties
+android/local.properties
+*.iml
+.idea/
+.vscode/
+captures/
+.externalNativeBuild/
+.cxx/
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini

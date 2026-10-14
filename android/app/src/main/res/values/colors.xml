@@ -1,0 +1,38 @@
+<resources>
+    <color name="slate_950">#020617</color>
+    <color name="slate_900">#0f172a</color>
+    <color name="slate_850">#172033</color>
+    <color name="slate_800">#1e293b</color>
+    <color name="slate_750">#293548</color>
+    <color name="slate_700">#334155</color>
+    <color name="slate_400">#94a3b8</color>
+    <color name="slate_300">#cbd5e1</color>
+    <color name="slate_100">#f1f5f9</color>
+    <color name="white">#ffffff</color>
+
+    <color name="purple_950">#2e1065</color>
+    <color name="purple_900">#581c87</color>
+    <color name="purple_600">#9333ea</color>
+    <color name="purple_500">#a855f7</color>
+    <color name="purple_400">#c084fc</color>
+    <color name="purple_300">#d8b4fe</color>
+
+    <color name="emerald_950">#022c22</color>
+    <color name="emerald_800">#065f46</color>
+    <color name="emerald_400">#34d399</color>
+    <color name="emerald_300">#6ee7b7</color>
+
+    <color name="rose_950">#4c0519</color>
+    <color name="rose_800">#9f1239</color>
+    <color name="rose_600">#e11d48</color>
+    <color name="rose_500">#f43f5e</color>
+    <color name="rose_300">#fda4af</color>
+
+    <color name="cyan_950">#083344</color>
+    <color name="cyan_800">#155e75</color>
+    <color name="cyan_300">#67e8f9</color>
+
+    <color name="amber_950">#451a03</color>
+    <color name="amber_800">#92400e</color>
+    <color name="amber_300">#fcd34d</color>
+</resources>

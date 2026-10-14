@@ -1,0 +1,1004 @@
+
+ZENITH '26
+College Fest Management System
+A Vibe-Coding Capstone Assignment — PM2-01 & PM2-02
+HSB — Product Management II: Technology & Agile Execution
+1. Overview
+This assignment asks students to build a small, genuinely working product — not a mockup, not a slide — using an AI coding assistant (“vibe coding”). The project is a College Fest Management System called Zenith '26: a student-facing event portal plus an admin dashboard, built on a real client-server architecture with a real database.
+The point isn't to turn PM students into engineers. It's that every concept from PM2-01 (How Software Works) and PM2-02 (Front-End, Back-End & Mobile) stops being an abstraction the moment a student has to watch their own API return a 404, fix a validation bug, or explain why the admin dashboard's numbers are always correct even when two people register at the same second. Vibe coding makes that possible without requiring a semester of programming first — the student directs, reviews, and tests; the AI assistant (Antigravity) writes the code.
+2. Learning Objectives
+By the end of this assignment, a student should be able to point to a specific screen or line of their own project and explain:
+Client vs. server — which half of their app is the “client” and which is the “server,” and why the server, not the browser, is the one source of truth.
+The three-layer stack — where the client layer, server layer, and data layer live in their own project, literally in different files.
+The request lifecycle & HTTP — what a GET and a POST actually do, and what a 200, 400, 404, and 409 status code each mean, because they will have triggered all four themselves.
+API contracts — why the frontend and backend had to agree on exact endpoint shapes before either could be built, and what breaks when that contract isn't respected.
+“Never trust the client” — by implementing the same validation rule twice (once in JavaScript, once in FastAPI) and seeing why the second copy is the one that actually protects the data.
+Databases — by designing a schema, seeding it with real data, and watching registrations persist across a server restart.
+Vibe coding as a PM skill — directing an AI coding tool in small, testable increments, reading its output critically, and writing precise bug reports instead of vague ones.
+3. Recommended Technology Stack
+For a college workshop setting, the stack below gives students a rich, modern interface without the complexity of React, Node.js, or a build pipeline — while still exercising every layer PM2-01 and PM2-02 cover.
+
+
+
+Layer
+
+
+Technology
+
+
+What it's for
+
+
+Frontend
+
+
+HTML + Tailwind CSS + JavaScript
+
+
+Modern layouts, responsive cards, dashboards, forms, modals, filters, animations, mobile-friendly screens.
+
+
+Backend
+
+
+Python + FastAPI
+
+
+REST APIs, business rules, validation, registration and event management.
+
+
+Database
+
+
+SQLite
+
+
+A local database file — no database server or cloud account required.
+
+
+API testing
+
+
+Postman
+
+
+Send requests, inspect responses, test errors, and understand API contracts directly.
+
+Everything runs on the student's own laptop. FastAPI serves both the frontend files and the API from the same application, so there's no separate frontend server to configure.
+4. Why Tailwind CSS for the Frontend
+Several options work here without introducing React. Tailwind is the recommended default for this workshop:
+
+
+
+Option
+
+
+Best for
+
+
+Recommendation
+
+
+Tailwind CSS
+
+
+Highly customized, modern interfaces
+
+
+Best for this workshop
+
+
+Bootstrap 5
+
+
+Quickly assembling conventional forms and dashboards
+
+
+Easiest alternative
+
+
+Bulma
+
+
+Simple, clean interfaces with less styling configuration
+
+
+Good lightweight alternative
+
+
+Plain CSS
+
+
+Learning CSS fundamentals from scratch
+
+
+More manual work for a rich UI
+
+Antigravity can generate polished Tailwind interfaces quickly, while the underlying HTML and JavaScript stay simple enough for a non-engineer to read and reason about. Students get a visually impressive project without needing React, Node.js, or a frontend build pipeline.
+
+
+
+A note on the Tailwind CDN
+Tailwind's browser-based Play CDN (used in this project) is convenient for local classroom practice but is meant for development, not production, and it requires internet access. For an offline workshop, switch to a compiled stylesheet or a local copy of Tailwind instead.
+5. The Project: What Zenith '26 Looks Like
+These are the design direction for the three core screens — not screenshots of a pre-built application. Students build these themselves, screen by screen, using the companion prompts file.
+Screen 1 — Student Event Portal
+Event cards, search, category filters, event details, available seats, and a registration form.
+Screen 2 — Admin Dashboard
+Total events, total registrations, capacity utilization, upcoming events, and a registration management view.
+Screen 3 — Registration Experience
+A responsive event detail view, input validation (client-side and server-side), a clear registration confirmation, and clear error messages when something goes wrong (event full, already registered, missing fields).
+6. Architecture
+The architecture is deliberately simple — one backend application, one database file, no cloud dependency:
+
+
+
+The whole system in one line
+Browser (HTML + Tailwind + JavaScript)  — HTTP requests / JSON responses →  FastAPI (serves both the frontend files and the REST API)  — SQL queries →  SQLite (fest.db, a single local file)
+
+Everything runs on the student's own laptop during the workshop. As a stretch idea for a later course module, the same FastAPI backend could power a native Android app built with Kotlin and Jetpack Compose — the web app and the Android app would share one backend and one API contract, which is itself a good live example of the “API contracts” lesson from PM2-02.
+7. Database Design
+7.1 events table
+
+
+
+Column
+
+
+Type
+
+
+Notes
+
+
+id
+
+
+INTEGER PRIMARY KEY
+
+
+Auto-incrementing event id
+
+
+title
+
+
+TEXT NOT NULL
+
+
+Event name
+
+
+category
+
+
+TEXT NOT NULL
+
+
+Technical / Cultural / Sports / Gaming / Workshop
+
+
+description
+
+
+TEXT
+
+
+Short description shown on the detail view
+
+
+event_date
+
+
+TEXT NOT NULL
+
+
+ISO date, e.g. 2026-11-14
+
+
+event_time
+
+
+TEXT NOT NULL
+
+
+Display time, e.g. 10:00 AM
+
+
+venue
+
+
+TEXT NOT NULL
+
+
+Location on campus
+
+
+capacity
+
+
+INTEGER NOT NULL
+
+
+Maximum registrations allowed
+
+
+fee
+
+
+INTEGER NOT NULL DEFAULT 0
+
+
+In rupees; 0 means free
+
+
+icon
+
+
+TEXT
+
+
+A single emoji used as a lightweight visual, so no image assets are required
+
+7.2 registrations table
+
+
+
+Column
+
+
+Type
+
+
+Notes
+
+
+id
+
+
+INTEGER PRIMARY KEY
+
+
+Auto-incrementing registration id
+
+
+event_id
+
+
+INTEGER NOT NULL
+
+
+References events.id
+
+
+student_name
+
+
+TEXT NOT NULL
+
+
+
+
+
+roll_number
+
+
+TEXT NOT NULL
+
+
+
+
+
+email
+
+
+TEXT NOT NULL
+
+
+
+
+
+phone
+
+
+TEXT
+
+
+Optional
+
+
+registered_at
+
+
+TEXT NOT NULL
+
+
+Timestamp set by the server, never the client
+
+Constraint: UNIQUE(event_id, email) — one registration per student per event, enforced by the database itself, not just by application code.
+
+
+
+A deliberate design choice worth discussing in class
+available_seats is never stored as its own column. It's computed on every request as capacity minus a live COUNT of registrations. Storing a separate “seats left” number would create two sources of truth that can drift out of sync — exactly the kind of data-consistency bug PM2-01's “three layers” lesson warns about. Ask students what could go wrong if they ‘optimized’ this by caching the count instead.
+
+7.3 Seed data
+All 14 events are pre-loaded by the seed script so the portal never looks empty on day one. Fest dates used throughout: Day 1 = 14 Nov 2026, Day 2 = 15 Nov 2026.
+
+
+
+#
+
+
+Title
+
+
+Category
+
+
+Date / Time
+
+
+Venue
+
+
+Cap.
+
+
+Fee
+
+
+1
+
+
+Code Sprint 2.0
+
+
+Technical
+
+
+14 Nov, 10:00 AM
+
+
+Main Auditorium
+
+
+100
+
+
+Free
+
+
+2
+
+
+Robo Race
+
+
+Technical
+
+
+14 Nov, 02:00 PM
+
+
+Engineering Lab 2
+
+
+40
+
+
+₹50
+
+
+3
+
+
+AI Pitch Fest
+
+
+Technical
+
+
+15 Nov, 11:00 AM
+
+
+Seminar Hall A
+
+
+60
+
+
+Free
+
+
+4
+
+
+Web Design Rumble
+
+
+Technical
+
+
+14 Nov, 04:00 PM
+
+
+Computer Lab 1
+
+
+50
+
+
+Free
+
+
+5
+
+
+Battle of Bands
+
+
+Cultural
+
+
+15 Nov, 06:00 PM
+
+
+Open Air Theatre
+
+
+300
+
+
+Free
+
+
+6
+
+
+Dance Fiesta
+
+
+Cultural
+
+
+14 Nov, 07:00 PM
+
+
+Open Air Theatre
+
+
+200
+
+
+Free
+
+
+7
+
+
+Nukkad Natak
+
+
+Cultural
+
+
+15 Nov, 03:00 PM
+
+
+Amphitheatre
+
+
+150
+
+
+Free
+
+
+8
+
+
+Fashion Fusion
+
+
+Cultural
+
+
+15 Nov, 08:00 PM
+
+
+Main Stage
+
+
+250
+
+
+₹100
+
+
+9
+
+
+Open Mic Night
+
+
+Cultural
+
+
+14 Nov, 09:00 PM
+
+
+Cafeteria Lawn
+
+
+100
+
+
+Free
+
+
+10
+
+
+Five-a-Side Football
+
+
+Sports
+
+
+14 Nov, 08:00 AM
+
+
+Sports Ground
+
+
+80
+
+
+Free
+
+
+11
+
+
+Chess Championship
+
+
+Sports
+
+
+15 Nov, 09:00 AM
+
+
+Indoor Games Hall
+
+
+32
+
+
+Free
+
+
+12
+
+
+Valorant Showdown
+
+
+Gaming
+
+
+14 Nov, 01:00 PM
+
+
+Gaming Arena
+
+
+60
+
+
+Free
+
+
+13
+
+
+UI/UX Design Workshop
+
+
+Workshop
+
+
+14 Nov, 11:00 AM
+
+
+Design Lab
+
+
+40
+
+
+Free
+
+
+14
+
+
+Intro to Vibe Coding
+
+
+Workshop
+
+
+15 Nov, 10:00 AM
+
+
+Computer Lab 1
+
+
+45
+
+
+Free
+
+This exact table ships as a third companion file, events_seed.xlsx — the seed script in Step 1 of the prompts file reads it directly rather than having the data hardcoded in Python.
+8. API Contract
+This is the agreement the frontend and backend must both honor — the same “API contract” concept from PM2-02. Students should design this before writing either side, then hold both sides to it exactly.
+
+
+
+Method & Path
+
+
+Purpose
+
+
+Key responses
+
+
+GET /api/events
+
+
+List events; optional ?category= and ?search=
+
+
+200 with array; available_seats computed live
+
+
+GET /api/events/{id}
+
+
+One event's detail
+
+
+200, or 404 if it doesn't exist
+
+
+POST /api/events/{id}/register
+
+
+Register a student
+
+
+201 success · 400 invalid input · 409 full or duplicate
+
+
+GET /api/registrations
+
+
+List registrations; optional ?event_id=
+
+
+200 with array, including event title
+
+
+GET /api/stats
+
+
+Admin dashboard numbers
+
+
+200, always computed fresh, never cached
+
+
+DELETE /api/registrations/{id}
+
+
+Stretch: admin cancels a registration
+
+
+200 success · 404 not found
+
+
+POST /api/events
+
+
+Stretch: admin adds a new event
+
+
+201 success · 400 invalid input
+9. Step-by-Step Build Plan
+This mirrors the companion prompts file exactly, one prompt per step. Each step is checked (run it, look at it) before moving to the next — that discipline is itself part of what's being taught.
+
+
+
+Step
+
+
+Builds
+
+
+PM2-01 / PM2-02 concept in play
+
+
+0
+
+
+Project folder & environment setup
+
+
+Project structure mirrors the client / server split
+
+
+1
+
+
+SQLite schema + seed data
+
+
+Data layer, databases
+
+
+2
+
+
+Pydantic request/response models
+
+
+API contracts, structured data
+
+
+3
+
+
+FastAPI endpoints + server-side validation
+
+
+Server layer, HTTP, “never trust the client”
+
+
+4
+
+
+FastAPI serves the frontend
+
+
+Client-server, same app serving both
+
+
+5
+
+
+Base layout & Tailwind setup
+
+
+Front-end tech stack (HTML/CSS/JS)
+
+
+6
+
+
+Event cards, search, filters
+
+
+Client layer, request/response cycle
+
+
+7
+
+
+Registration form (client + server validation)
+
+
+“Never trust the client,” status codes
+
+
+8
+
+
+Admin dashboard
+
+
+Data layer → aggregated view, three-layer stack
+
+
+9
+
+
+Loading / error / empty states
+
+
+The request lifecycle isn't always instant or successful
+
+
+10
+
+
+Postman collection & manual testing
+
+
+API contracts, HTTP status codes
+
+
+11
+
+
+Polish pass & README
+
+
+Professional handoff habits
+
+
+Stretch
+
+
+Admin add/delete endpoints
+
+
+Full CRUD, REST conventions
+10. How to Use the Vibe-Coding Prompts File
+The companion file, Vibe-Coding-Prompts-Zenith26.md, contains one ready-to-paste prompt per build step above, written for Google Antigravity. A second companion file, events_seed.xlsx, holds the 14 seed events as data rather than as text in a prompt. Students should:
+Open Antigravity and create the project folder described in Step 0.
+Copy events_seed.xlsx into that project's data/ folder, as Step 0 instructs — Step 1 cannot seed the database without it.
+Copy one step's prompt block at a time into Antigravity's agent chat — never multiple steps at once.
+Run the app after every step and actually look at it before moving on.
+When something looks wrong, describe what they observed in plain language (“the register button does nothing and the console shows a 404”), not a guess at the cause — and let Antigravity fix it.
+Keep the prompts file open the whole session as a checklist.
+This is the actual skill being taught: a PM directing an engineering tool in small, verifiable increments, rather than either writing all the code by hand or blindly accepting a huge, unreviewed change.
+11. Testing with Postman
+Install the Postman desktop app (free; no account needed for local testing — its API Client works signed out).
+Import the zenith26-api.postman_collection.json file generated in Step 10 of the prompts file.
+With the FastAPI server running locally, run each request in the collection in order.
+For every response, read the status code first, then the body — don't just check “did it look okay in the browser.”
+Run the deliberately-invalid registration request and confirm a 400 comes back with a clear error message, not a server crash.
+Register the same email twice for the same event and confirm a 409 comes back the second time.
+This is the step where students stop trusting “the UI looks like it worked” and start reading the API contract directly — exactly the muscle the PM2-02 “API Contracts” lesson was building toward.
+A third companion file, Postman-Testing-Commands-Zenith26.md, spells out all 18 of these requests with exact bodies and expected responses, plus Postman desktop setup steps — use it as the checklist for this section.
+12. Deliverables & Submission
+The full project folder (zipped) or a link to a GitHub repository containing the working code.
+5–6 screenshots (or a short screen recording) showing: the event portal, the registration flow including one success and one error case, the admin dashboard, and the Postman collection with at least one 2xx and one 4xx response visible.
+A one-page written reflection naming at least three specific concepts from PM2-01 or PM2-02 and describing, in the student's own words, exactly where they encountered that concept while building — not a restatement of the slide, a real example from their own project.
+
+
+
+Instructor to confirm
+Submission format (LMS upload vs. email vs. GitHub link), exact deadline, and whether this is an individual or paired assignment are left for the instructor to set before distributing this document.
+13. Evaluation Rubric
+
+
+
+Criterion
+
+
+Weight
+
+
+What “good” looks like
+
+
+Functionality
+
+
+30%
+
+
+Registration, search/filter, and the admin dashboard all work end-to-end without manual workarounds
+
+
+API design & validation
+
+
+20%
+
+
+Server-side validation exists and is independent of the frontend; correct status codes (200/201/400/404/409)
+
+
+Database design
+
+
+15%
+
+
+Schema matches the spec; no duplicated/stale state (e.g. a stored seat count that can drift)
+
+
+UI/UX quality
+
+
+15%
+
+
+Responsive on mobile; clear loading, error, and empty states; visually coherent
+
+
+Postman testing evidence
+
+
+10%
+
+
+Collection covers all endpoints; at least one success and one failure case shown per key endpoint
+
+
+Reflection quality
+
+
+10%
+
+
+Specific, concrete links to PM2-01/02 concepts, not generic restatement
+14. Suggested Workshop Timeline
+Designed for a single 6-hour workshop day; split across two sessions if needed.
+
+
+
+Time
+
+
+Steps covered
+
+
+Hour 1
+
+
+Steps 0–2 — project setup, database, seed data, models
+
+
+Hour 2
+
+
+Step 3–4 — API endpoints, server-side validation, serving the frontend
+
+
+Hour 3
+
+
+Steps 5–6 — base layout, event cards, search & filters
+
+
+Hour 4
+
+
+Step 7 — registration form, client + server validation, end-to-end test
+
+
+Hour 5
+
+
+Step 8–9 — admin dashboard, loading/error/empty states
+
+
+Hour 6
+
+
+Steps 10–11 — Postman testing, polish pass, submission prep
+15. Troubleshooting / FAQ
+“uvicorn: command not found” or Python errors on startup
+The virtual environment from Step 0 probably isn't activated. Ask Antigravity to show the exact activate command for the student's OS and run it before starting the server again.
+“Address already in use” on port 8000
+A previous server instance is still running. Close that terminal window or ask Antigravity to stop the running process before restarting.
+The page loads but no events appear
+Open the browser console (F12) and check for a failed request to /api/events. Most often this means the backend isn't running, or the frontend is pointed at the wrong URL.
+“Antigravity generated something I don't understand — what do I do?”
+Ask it to explain the specific function or file in plain language before moving on. Understanding what was built is part of the assignment, not optional — a PM who can't explain their own demo hasn't learned the lesson.
+16. Appendix: Glossary Cross-Reference
+These terms are covered in more depth in the companion PM2-01 & PM2-02 Combined Overview deck. Students who get stuck on vocabulary mid-build should check there first.
+Client / Server — Part 1
+Three-layer stack (client / server / data) — Part 1
+HTTP, status codes, request lifecycle — Part 1 & Part 3
+Front-end vs. back-end ownership, “never trust the client” — Part 2
+API contracts, REST — Part 2 & Part 8
+SQL vs. NoSQL, databases — Part 5
+HTML, CSS, JavaScript, the DOM — Part 6
+Server languages, web servers, ORMs — Part 7
